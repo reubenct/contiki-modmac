@@ -35,7 +35,7 @@
  *         Fredrik Osterlind <fros@sics.se>
  */
 
-#include <jni.h>
+#include <jni.h>  //rct15: jni.h missing, copied from /usr/lib/jvm/java-7-openjdk-amd64/include/ to ./lib
 #include <stdio.h>
 #include <string.h>
 
