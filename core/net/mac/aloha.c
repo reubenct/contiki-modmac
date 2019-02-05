@@ -1,6 +1,6 @@
 /**
  * \file
- *         A ALOHA MAC layer
+ *         ALOHA MAC layer
  * \author
  *         rct15
  */
@@ -14,6 +14,9 @@
 
 #include "lib/random.h"
 
+#include <string.h>
+#include <stdio.h>
+
 uint16_t n_pkts_transmitted = 0;
 uint16_t n_pkts_received = 0;
 
@@ -25,6 +28,7 @@ struct send_struct {
 static void transmit_packet(void *ptr)
 {
   struct send_struct *s = ptr;
+  printf("!! ALOHA sending packet !!\n");
   NETSTACK_RDC.send(s->sent, s->ptr);
   n_pkts_transmitted++;
 }
@@ -32,14 +36,22 @@ static void
 send_packet(mac_callback_t sent, void *ptr)
 {
   clock_time_t delay;
-  struct ctimer c;
+  static struct ctimer c;
   struct send_struct s1;
   s1.ptr = ptr;
   s1.sent = sent;
-  delay = ((1 << 4) - 1) * MAX(CLOCK_SECOND / 3125, 1);
+  void *ct_ptr = &s1;
+  delay = ((1 << 1) - 1) *(CLOCK_SECOND / 3125);
   delay = random_rand() % delay;
-  ctimer_set(&c, delay, transmit_packet,&s1);
 
+  ctimer_set(&c, delay, transmit_packet,ct_ptr);
+  /*while(!ctimer_expired(&c)){
+    n--;
+    if(n==100){
+      n=100;
+      printf("Waiting to send packet\n");
+    }
+  }*/
   //NETSTACK_RDC.send(sent, ptr); //sending without delay
 }
 
