@@ -28,7 +28,7 @@ struct send_struct {
 static void transmit_packet(void *ptr)
 {
   struct send_struct *s = ptr;
-  printf("!! ALOHA sending packet !!\n");
+  printf("!! ALOHA sending packet %ld!!\n",CLOCK_SECOND);
   NETSTACK_RDC.send(s->sent, s->ptr);
   n_pkts_transmitted++;
 }
@@ -37,13 +37,22 @@ send_packet(mac_callback_t sent, void *ptr)
 {
   clock_time_t delay;
   static struct ctimer c;
+
   struct send_struct s1;
   s1.ptr = ptr;
   s1.sent = sent;
   void *ct_ptr = &s1;
-  delay = ((1 << 1) - 1) *(CLOCK_SECOND / 3125);
+
+  /*btime = NETSTACK_RDC.channel_check_interval();
+  if(btime == 0) {
+    btime = MAX(CLOCK_SECOND / 3125, 1);
+  }*/
+  delay = 1;//((1 << 1) - 1) *1;
+  //delay=CLOCK_SECOND*0.01;
   delay = random_rand() % delay;
 
+  //clock_wait(delay);
+  //transmit_packet(ct_ptr);
   ctimer_set(&c, delay, transmit_packet,ct_ptr);
   /*while(!ctimer_expired(&c)){
     n--;
