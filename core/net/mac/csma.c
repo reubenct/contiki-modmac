@@ -192,7 +192,7 @@ schedule_transmission(struct neighbor_queue *n)
     /* Pick a time for next transmission */
     delay = random_rand() % delay;
   }
-
+  //printf("CSMA scheduling transmission\n");
   PRINTF("csma: scheduling transmission in %u ticks, NB=%u, BE=%u\n",
       (unsigned)delay, n->collisions, backoff_exponent);
   ctimer_set(&n->transmit_timer, delay, transmit_packet_list, n);
@@ -269,6 +269,7 @@ static void
 collision(struct rdc_buf_list *q, struct neighbor_queue *n,
           int num_transmissions)
 {
+  printf("collision\n");
   struct qbuf_metadata *metadata;
 
   metadata = (struct qbuf_metadata *)q->ptr;
@@ -280,7 +281,6 @@ collision(struct rdc_buf_list *q, struct neighbor_queue *n,
     /* Increment to indicate a next retry */
     n->transmissions++;
   }
-
   if(n->transmissions >= metadata->max_transmissions) {
     tx_done(MAC_TX_COLLISION, q, n);
   } else {
